@@ -1,42 +1,81 @@
 ---
-date: 2019-08-08T22:42:09.000+00:00
-title: Sunflower Sutra
+date: 2020-10-01T05:00:00Z
+title: Headless KVM Host with CentOS and virt-manager
 author: Allen Ginsberg
 hero_image: "/content/images/adrien-olichon--aOsCcTJXWY-unsplash.jpg"
 
 ---
-I walked on the banks of the tincan banana dock and sat down under the huge shade of a Southern Pacific locomotive to look for the sunset over the box house hills and cry.
+# Headless KVM Host with CentOS and virt-manager
 
-Jack Kerouac sat beside me on a busted rusty iron pole, companion, we thought the same thoughts of the soul, bleak and blue and sad-eyed, surrounded by the gnarled steel roots of trees of machinery.
+1 minute read
 
-![](/content/images/elcarito-CRn-_80z4SE-unsplash.jpg)
+I’m currently running [KVM](https://www.linux-kvm.org/page/Main_Page) on a single remote host. I have a bunch of virtual machines running services like DHCP/DNS, UniFi Controller and UniFi video.
 
-The only water on the river mirrored the red sky, sun sank on top of final Frisco peaks, no fish in that stream, no hermit in those mounts, just ourselves rheumy-eyed and hung-over like old bums on the riverbank, tired and wily.
+When I intially set this up I wanted to keep the virtual host installation as minimal as possible. So off I went and did a minimal installation of CentOS 7, thinking I could remotely manage this server through File > Add Connection on my local Linux machine with virt-manager. Of course this was not as straightforward as I thought, so during my search for an answer I came across a suggestion to use SSH with X forwarding.
 
-Look at the Sunflower, he said, there was a dead gray shadow against the sky, big as a man, sitting dry on top of a pile of ancient sawdust–
+Below is a guide on setting up a KVM host with virt-manager that can be remotely managed through SSH with X forwarding.
 
-\--I rushed up enchanted–it was my first sunflower, memories of Blake–my visions–Harlem
+I’m going to be using a CentOS 7 minimal installation that is fully patched.
 
-# “the gray Sunflower poised against the sunset, crackly bleak and dusty with the smut and smog and smoke of olden locomotives in its eye”
+To begin, install the virtualization host software.
 
-and Hells of the Eastern rivers, bridges clanking Joes greasy Sandwiches, dead baby carriages, black treadless tires forgotten and unretreaded, the poem of the riverbank, condoms & pots, steel knives, nothing stainless, only the dank muck and the razor-sharp artifacts passing into the past–
+    ~]# yum group install -y "Virtualization Host"
 
-and the gray Sunflower poised against the sunset, crackly bleak and dusty with the smut and smog and smoke of olden locomotives in its eye–
+Start the libvirtd service and verify it is enabled on startup.
 
-corolla of bleary spikes pushed down and broken like a battered crown, seeds fallen out of its face, soon-to-be-toothless mouth of sunny air, sunrays obliterated on its hairy head like a dried wire spiderweb,
+    ~]# systemctl start libvirtd
+    ~]# systemctl is-enabled libvirtd
 
-leaves stuck out like arms out of the stem, gestures from the sawdust root, broke pieces of plaster fallen out of the black twigs, a dead fly in its ear,
+Install X Window System.
 
-Unholy battered old thing you were, my sunflower O my soul, I loved you then!
+    ~]# yum install -y "@X Window System"
 
-![](/content/images/francesco-mazzoli-0xh3QPqcfKM-unsplash.jpg)
+Install virt-manager.
 
-The grime was no man’s grime but death and human locomotives,
+    ~]# yum install -y virt-manager
 
-all that dress of dust, that veil of darkened railroad skin, that smog of cheek, that eyelid of black mis’ry, that sooty hand or phallus or protuberance of artificial worse-than-dirt–industrial–modern–all that civilization spotting your crazy golden crown–
+The host setup is now complete. Now all we need to do is connect to the host through SSH with X Forwarding.
 
-and those blear thoughts of death and dusty loveless eyes and ends and withered roots below, in the home-pile of sand and sawdust, rubber dollar bills, skin of machinery, the guts and innards of the weeping coughing car, the empty lonely tincans with their rusty tongues alack, what more could I name, the smoked ashes of some cock cigar, the cunts of wheelbarrows and the milky breasts of cars, wornout asses out of chairs & sphincters of dynamos–all these
+## Connecting with Linux[Permalink](https://blog.ricosharp.com/posts/2019/Headless-KVM-Host-with-CentOS-and-virt-manager#connecting-with-linux "Permalink")
 
-entangled in your mummied roots–and you standing before me in the sunset, all your glory in your form!
+Open a terminal and SSH to the KVM host. Once connected open virt-manager.
 
-A perfect beauty of a sunflower! a perfect excellent lovely sunflower existence! a sweet natural eye to the new hip moon, woke up alive and excited grasping in the sunset shadow sunrise golden monthly breeze!
+    ~]$ ssh -X rico@192.168.122.100
+    ~]$ su
+    ~]$ virt-manager
+
+## Connecting with a Mac.[Permalink](https://blog.ricosharp.com/posts/2019/Headless-KVM-Host-with-CentOS-and-virt-manager#connecting-with-a-mac "Permalink")
+
+Download and install [XQuartz](https://www.xquartz.org/) Open a terminal and SSH to the KVM host. Once connected open virt-manager.
+
+    ~]$ ssh -X rico@192.168.122.100
+    ~]$ su
+    ~]$ virt-manager
+
+## Connecting with a Windows System[Permalink](https://blog.ricosharp.com/posts/2019/Headless-KVM-Host-with-CentOS-and-virt-manager#connecting-with-a-windows-system "Permalink")
+
+* Download, install, then open [xming](https://sourceforge.net/projects/xming/)
+* Download and open putty
+* Go to Connection > SSH > X11 and check Enable X11 forwarding
+* Go back to Session and enter the IP/Hostname of your machine and click Open
+
+## Using virt-manager as a non-root user[Permalink](https://blog.ricosharp.com/posts/2019/Headless-KVM-Host-with-CentOS-and-virt-manager#using-virt-manager-as-a-non-root-user "Permalink")
+
+In the SSH examples above, I am SSH’ing as a non-root user, then changing to root to run virt-manager. This is because polkit blocks user accounts from accessing libvirtd.
+
+To work around this and allow non-root users who are part of the wheel group access to run virt-manager, create this rule:
+
+    ~]# vi /etc/polkit-1/rules.d/51-libvirt.rules
+    
+    /* Allow users in wheel group to manage the libvirt
+    daemon without authentication */
+    polkit.addRule(function(action, subject) {
+        if (action.id == "org.libvirt.unix.manage" &&
+            subject.isInGroup("wheel")) {
+                return polkit.Result.YES;
+        }
+    });
+
+## References[Permalink](https://blog.ricosharp.com/posts/2019/Headless-KVM-Host-with-CentOS-and-virt-manager#references "Permalink")
+
+[https://wiki.archlinux.org/index.php/Libvirt#Using_polkit](https://wiki.archlinux.org/index.php/Libvirt#Using_polkit "https://wiki.archlinux.org/index.php/Libvirt#Using_polkit")
