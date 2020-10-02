@@ -5,22 +5,76 @@ author: Ralph Waldo Emerson
 hero_image: "/content/images/anomaly-oRskqiH7FNc-unsplash.jpg"
 
 ---
-I read the other day some verses written by an eminent painter which were original and not conventional. The soul always hears an admonition in such lines, let the subject be what it may. The sentiment they instill is of more value than any thought they may contain. To believe your own thought, to believe that what is true for you in your private heart is true for all men, — that is genius.
+In this tutorial you will learn how to install GUI ( graphical user interface ) on [Ubuntu 20.04](https://linuxconfig.org/ubuntu-20-04-guide) Focal Fossa Server/Desktop.   
+  
+**In this tutorial you will learn:** 
 
-Speak your latent conviction, and it shall be the universal sense; for the inmost in due time becomes the outmost,—- and our first thought is rendered back to us by the trumpets of the Last Judgment. Familiar as the voice of the mind is to each, the highest merit we ascribe to Moses, Plato, and Milton is, that they set at naught books and traditions, and spoke not what men but what they thought. A man should learn to detect and watch that gleam of light which flashes across his mind from within, more than the lustre of the firmament of bards and sages.
+* How to install `tasksel`
+* How to select GUI from `tasksel` tasks
+* How to install GUI
+* How to login to newly installed GUI
 
-# “A man should learn to detect and watch that gleam of light which flashes across his mind from within…”
+ 
 
-Yet he dismisses without notice his thought, because it is his. In every work of genius we recognize our own rejected thoughts: they come back to us with a certain alienated majesty. Great works of art have no more affecting lesson for us than this. They teach us to abide by our spontaneous impression with good-humored inflexibility then most when the whole cry of voices is on the other side. Else, to-morrow a stranger will say with masterly good sense precisely what we have thought and felt all the time, and we shall be forced to take with shame our own opinion from another.
+[![Installed GUI on Ubuntu 20.04](https://linuxconfig.org/images/01-ubuntu-20-04-gui-installation.png)](https://linuxconfig.org/images/01-ubuntu-20-04-gui-installation.png "Installed GUI on Ubuntu 20.04") Installed GUI on Ubuntu 20.04
 
-![](/content/images/anomaly-oRskqiH7FNc-unsplash.jpg)
+ 
 
-There is a time in every man’s education when he arrives at the conviction that envy is ignorance; that imitation is suicide; that he must take himself for better, for worse, as his portion; that though the wide universe is full of good, no kernel of nourishing corn can come to him but through his toil bestowed on that plot of ground which is given to him to till. The power which resides in him is new in nature, and none but he knows what that is which he can do, nor does he know until he has tried.
+## Software Requirements and Conventions Used
 
-Not for nothing one face, one character, one fact, makes much impression on him, and another none. This sculpture in the memory is not without preestablished harmony. The eye was placed where one ray should fall, that it might testify of that particular ray. We but half express ourselves, and are ashamed of that divine idea which each of us represents.
+ 
 
-# “There is a time in every man’s education when he arrives at the conviction that envy is ignorance; that imitation is suicide; that he must take himself for better, for worse…”
+| --- |
+| Software Requirements and Linux Command Line Conventions |
+| Category | Requirements, Conventions or Software Version Used |
+| System | Installed or upgraded Ubuntu 20.04 Focal Fossa |
+| Software | tasksel |
+| Other | Privileged access to your Linux system as root or via the sudo command. |
+| Conventions | # - requires given linux commands to be executed with root privileges either directly as a root user or by use of sudo command $ - requires given linux commands to be executed as a regular non-privileged user |
 
-It may be safely trusted as proportionate and of good issues, so it be faithfully imparted, but God will not have his work made manifest by cowards. A man is relieved and gay when he has put his heart into his work and done his best; but what he has said or done otherwise, shall give him no peace. It is a deliverance which does not deliver. In the attempt his genius deserts him; no muse befriends; no invention, no hope.
+ 
 
-Trust thyself: every heart vibrates to that iron string. Accept the place the divine providence has found for you, the society of your contemporaries, the connection of events. Great men have always done so, and confided themselves childlike to the genius of their age, betraying their perception that the absolutely trustworthy was seated at their heart, working through their hands, predominating in all their being. And we are now men, and must accept in the highest mind the same transcendent destiny; and not minors and invalids in a protected corner, not cowards fleeing before a revolution, but guides, redeemers, and benefactors, obeying the Almighty effort, and advancing on Chaos and the Dark.
+## Ubuntu 20.04 GUI installation step by step instructions
+
+ 
+
+1. First step is to updated the `apt` package index and install `tasksel`. To do so execute the following [Linux commands](https://linuxconfig.org/linux-commands):
+
+       $ sudo apt update
+       $ sudo apt install tasksel
+       
+2. **_SUBSCRIBE TO NEWSLETTER_**_  
+   Subscribe to Linux Career_ [_NEWSLETTER_](https://bit.ly/2X5D30q) _and receive latest Linux news, jobs, career advice and tutorials._
+3. Next, select the GUI you wish to install. Below table shows main desktop environments available for installation via `tasksel`:
+
+   | --- |
+   | Main available Graphical User Interfaces (GUI) installations using tasksel's tasks |
+   | Task | Description |
+   | kubuntu-desktop | Kubuntu desktop ( KDE Desktop ) |
+   | lubuntu-desktop | Lubuntu Desktop ( LXQt desktop ) |
+   | ubuntu-budgie-desktop | Ubuntu Budgie desktop |
+   | ubuntu-desktop | Ubuntu desktop ( default GNOME ) |
+   | ubuntu-desktop-minimal | Ubuntu minimal desktop ( default GNOME ) |
+   | ubuntu-mate-desktop | Ubuntu MATE desktop |
+   | ubuntustudio-desktop | Ubuntu Studio desktop ( Xfce-based desktop ) |
+   | ubuntustudio-desktop-core | Ubuntu Studio minimal DE installation ( Xfce-based desktop ) |
+   | xubuntu-desktop | Xubuntu desktop ( Xfce desktop ) |
+
+    For additional GUI selection execute the below command:
+
+       $ tasksel --list-tasks
+       
+4. At this point you have selected GUI you wish to install and took a note of the relevant task name.   
+     
+   Next, use `tasksel` command to install your selected GUI. For example to install the default Ubuntu GNOME desktop execute:
+
+       $ sudo tasksel install ubuntu-desktop
+       
+5. Reboot your system:
+
+       $ reboot
+6. At this point the GUI should start. You may need to select your desired desktop flavor on the login page before you login.   
+     
+    In case the GUI is not starting at all, make sure your system boots into the graphical target. To do so execute:
+
+       $ sudo systemctl set-default graphical.target
