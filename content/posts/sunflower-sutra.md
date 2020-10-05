@@ -1,7 +1,7 @@
 ---
 date: 2020-10-01T05:00:00Z
 title: Headless KVM Host with CentOS and virt-manager
-author: Quan N
+author: Khai N
 hero_image: "/content/images/adrien-olichon--aOsCcTJXWY-unsplash.jpg"
 
 ---
